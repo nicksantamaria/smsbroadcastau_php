@@ -25,7 +25,7 @@ Usage
     // Send an SMS.
     $api->addRecipient('0400000000');
     $api->message = 'Message to send to recipients';
-    $api->from = 'SMS API';
+    $api->sender = 'SMS API';
     $api->send();
 
 
