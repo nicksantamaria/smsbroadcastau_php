@@ -228,7 +228,7 @@ class smsbroadcastau {
   }
   
   /**
-   * Protected helper which executes the cURL POST request for PAI calls.
+   * Protected helper which executes the cURL POST request for API calls.
    *
    * @param string $data
    *   Data to POST.
