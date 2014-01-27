@@ -16,12 +16,18 @@ class smsbroadcastau {
   /**
    * API account username.
    *
+   * Your SMS Broadcast username. This is the same username that you would use 
+   * to login to the SMS Broadcast website. 
+   *
    * @see smsbroadcastau::setAuthentication()
    */
   protected $api_username = '';
   
   /**
    * API account password.
+   *
+   * Your SMS Broadcast password. This is the same password that you would use 
+   * to login to the SMS Broadcast website.
    *
    * @see smsbroadcastau::setAuthentication()
    */
@@ -30,22 +36,63 @@ class smsbroadcastau {
   /**
    * Array of recipient phone numbers.
    *
+   * The numbers can be in the format: 
+   *   - 04xxxxxxxx (Australian format)
+   *   - 614xxxxxxxx (International format without a preceding +)
+   *   - 4xxxxxxxx (missing leading 0) 
+   * SMS Broadcast recommend using the international format, but your messages 
+   * will be accepted in any of the above formats. The numbers should contain 
+   * only numbers, with no spaces or other characters. 
+   *
    * @see smsbroadcastau::addRecipient()
    */
   public $recipients = array();
   
   /**
-   * String which is displayed to recipients as the sender.
+   * The sender ID for the messages. 
    *
-   * Maximum of 11 characters.
+   * Can be a mobile number or letters, up to 11 characters and should not 
+   * contain punctuation or spaces. Leave blank to use SMS BroadcastÕs 2-way 
+   * number.
    */
   public $sender = '';
   
   /**
-   * Body of the SMS.
+   * The content of the SMS message. 
+   *
+   * Must not be longer than 160 characters unless the maxsplit parameter is 
+   * used. Must be URL encoded.
    */
   public $message = '';
   
+  /**
+   * Determines the maximum length of your SMS message.
+   *
+   * Standard SMS messages are limited to 160 characters, however our system 
+   * allows you to send SMS messages up to 765 characters. This is achieved by 
+   * splitting the message into parts. Each part is a normal SMS and is charged 
+   * at the normal price. The SMS is then reconstructed by the receiving mobile 
+   * phone and should display as a single SMS.
+   *
+   * The maxsplit setting determines how many times you are willing to split the
+   * message. This allows you to control the maximum cost and length of each 
+   * message. The default setting is 1 (160 characters). The maximum is 5 (765 
+   * characters). 
+   *
+   * If your SMS is 160 characters or less, it will be sent (and cost) as a 
+   * single SMS, regardless of the value of this setting. 
+   *
+   * If your message is longer than 160 characters, it is split into parts of up
+   * to 153 characters (not 160). 
+   */
+  public $maxsplit = 1;
+  
+  /**
+   * Your reference number for the message.
+   *
+   * Assists you track the message status. This parameter is optional and can be
+   * up to 20 characters. 
+   */
   public $ref = '';
   
   /**
@@ -68,6 +115,14 @@ class smsbroadcastau {
   
   /**
    * Helper method which adds a new recipient to the SMS.
+   *
+   * The numbers can be in the format: 
+   *   - 04xxxxxxxx (Australian format)
+   *   - 614xxxxxxxx (International format without a preceding +)
+   *   - 4xxxxxxxx (missing leading 0) 
+   * SMS Broadcast recommend using the international format, but your messages 
+   * will be accepted in any of the above formats. The numbers should contain 
+   * only numbers, with no spaces or other characters. 
    *
    * @param string $number
    *   Phone number of the new recipient
@@ -185,7 +240,7 @@ class smsbroadcastau {
    *   Data to POST to SMS gateway API endpoint.
    * 
    * @return array
-   *   Response from SMS gateway.
+   *   Response from SMS gateway. 
    */
   public function executeApiRequest($vars) {
     $data = $this->preparePostData($vars);
