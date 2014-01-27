@@ -218,7 +218,7 @@ class smsbroadcastau {
       switch ($key) {
         case 'to':
           // Support multiple phone numbers.
-          $value = implode(',', $value);
+          $value = implode(',', array_unique($value));
           break;
       }
       $post_data[] = $key . '=' . rawurlencode($value);
