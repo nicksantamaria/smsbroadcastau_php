@@ -175,7 +175,7 @@ class smsbroadcastau {
     $retval = $this->executeApiRequest($vars);
     list(, $response) = array_values(reset($retval));
     
-    return $response;
+    return (int) $response;
   }
   
   /**
