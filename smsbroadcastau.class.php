@@ -79,8 +79,18 @@ class smsbroadcastau {
   /**
    * Executes sending of an SMS.
    * 
-   * @return string $response2
-   *   Response from SMS gateway.
+   * @return array 
+   *   Response from SMS gateway. Contains response for each receiving address.
+   *   Array (
+   *     Array (
+   *       status: Status of the SMS send. Possible values:
+   *         - OK : This message was accepted.
+   *         - BAD: This message was invalid. (eg, invalid phone number) 
+   *       receiving_number: The receiving mobile number.
+   *       response: Will display our reference number for the SMS message, or
+   *                 the reason for a failed SMS message. 
+   *     )
+   *   )
    *
    * @throws Exception
    *
@@ -130,24 +140,7 @@ class smsbroadcastau {
       }
     }
   
-    list($status, $response1, $response2) = $this->executeApiRequest($vars);
-    
-    switch ($status) {
-      case 'ERROR':
-        $args['!error'] = $response1;
-        throw new Exception(strtr('There was an error with this request: !error.', $args));
-        break;
-      
-      case 'BAD':
-        $args = array(
-          '!recipient' => $response1, 
-          '!error' => $response2,
-        );
-        throw new Exception(strtr('The message to !recipient was not successful: !error.', $args));
-        break;
-    }
-    
-    return $response2;
+    return $this->executeApiRequest($vars);
   }
   
   /**
@@ -179,11 +172,8 @@ class smsbroadcastau {
       }
     }
     
-    list($status, $response) = $this->executeApiRequest($vars);
-    
-    if ($status == 'ERROR') {
-      throw new Exception(strtr('There was an error with this request: !error.', array('!error' => $response)));
-    }
+    $retval = $this->executeApiRequest($vars);
+    list(, $response) = array_values(reset($retval));
     
     return $response;
   }
@@ -200,7 +190,24 @@ class smsbroadcastau {
   public function executeApiRequest($vars) {
     $data = $this->preparePostData($vars);
     $retval = $this->executePostRequest($data);
-    return explode(':', $retval);
+    
+    list($status, $response) = explode(':', $retval);
+    if ($status == 'ERROR') {
+      throw new Exception(strtr('There was an error with this request: !error.', array('!error' => $response)));
+    }
+    
+    $data = array();
+    $lines = explode("\n", $retval);
+    foreach (array_filter($lines) as $i => $line) {
+      list($status, $receiving_number, $response) = explode(':', $line);
+      $data[$i] = array(
+        'status' => trim($status),
+        'receiving_number' => trim($receiving_number),
+        'response' => trim($response),
+      );
+    }
+    
+    return $data;
   }
   
   /**
