@@ -16,11 +16,18 @@ Usage
 -----
 
     <?php
+    // Initialise API object with username and password.
     $api = new smsbroadcastau($username, $password);
+    
+    // Check account balance.
+    $available_credits = $api->checkBalance();
+    
+    // Send an SMS.
     $api->addRecipient('0400000000');
     $api->message = 'Message to send to recipients';
     $api->from = 'SMS API';
     $api->send();
+
 
 License
 -------
