@@ -234,7 +234,18 @@ class smsbroadcastau {
       }
     }
   
-    return $this->executeApiRequest($vars);
+    $retval = $this->executeApiRequest($vars);
+    $data = array();
+    foreach ($retval as $i => $line) {
+      list($status, $receiving_number, $response) = explode(':', $line);
+      $data[$i] = array(
+        'status' => trim($status),
+        'receiving_number' => trim($receiving_number),
+        'response' => trim($response),
+      );
+    }
+
+    return $data;
   }
   
   /**
@@ -293,12 +304,8 @@ class smsbroadcastau {
     $data = array();
     $lines = explode("\n", $retval);
     foreach (array_filter($lines) as $i => $line) {
-      list($status, $receiving_number, $response) = explode(':', $line);
-      $data[$i] = array(
-        'status' => trim($status),
-        'receiving_number' => trim($receiving_number),
-        'response' => trim($response),
-      );
+      $line = trim($line);
+      $data[$i] = explode(':', $line);
     }
     
     return $data;
