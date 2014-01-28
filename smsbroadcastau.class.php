@@ -114,6 +114,13 @@ class smsbroadcastau {
    * Maximum number of SMSs that can be part of a multipart SMS.
    */
   const MAX_SMS_PER_MULTIPART = 7;
+
+  /**
+   * Maximum number of characters that can be included in the sender string.
+   *
+   * @see $this->sender
+   */
+  const MAX_CHARS_SENDER = 11;
   
   /**
    * Constructor
@@ -216,7 +223,7 @@ class smsbroadcastau {
           break;
           
         case 'from':
-          if (strlen($value) > 11) {
+          if (strlen($value) > self::MAX_CHARS_SENDER) {
             throw new Exception('From string must be 11 characters or less.');
           }
           break;
