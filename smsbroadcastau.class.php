@@ -250,7 +250,7 @@ class smsbroadcastau {
     $retval = $this->executeApiRequest($vars);
     $data = array();
     foreach ($retval as $i => $line) {
-      list($status, $receiving_number, $response) = explode(':', $line);
+      list($status, $receiving_number, $response) = $line;
       $data[$i] = array(
         'status' => trim($status),
         'receiving_number' => trim($receiving_number),
