@@ -11,6 +11,11 @@ Using this class you can:
 * Check SMS credit balance of an account.
 * Send SMSs to single and multiple recipients.
 
+Todo:
+
+* Message Status Updates
+* Inbound SMS Messages 
+
 
 Usage
 -----
