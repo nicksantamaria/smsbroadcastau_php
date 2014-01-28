@@ -101,17 +101,23 @@ class smsbroadcastau {
 
   /**
    * Maximum number of characters that can be inlcuded in a single SMS.
+   *
+   * @see $this->maxsplit
    */
   const MAX_CHARS_PER_MESSAGE_SINGLE = 160;
 
   /**
    * Maximum number of characters that can be included in each SMS when sending
    * multipart SMSs.
+   *
+   * @see $this->maxsplit
    */
   const MAX_CHARS_PER_MESSAGE_MULTI = 153;
 
   /**
    * Maximum number of SMSs that can be part of a multipart SMS.
+   *
+   * @see $this->maxsplit
    */
   const MAX_SMS_PER_MULTIPART = 7;
 
