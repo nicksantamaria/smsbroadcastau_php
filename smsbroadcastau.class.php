@@ -209,13 +209,6 @@ class smsbroadcastau {
     // Basic validation on the authentication details and POST data.
     foreach ($vars as $key => $value) {
       switch ($key) {
-        case 'username':
-        case 'password':
-          if (empty($value)) {
-            throw new Exception('API username or password not specified.');
-          }
-          break;
-        
         case 'to':
           if (empty($value)) {
             throw new Exception('No recipients specified.');
@@ -261,18 +254,6 @@ class smsbroadcastau {
       'action' => 'balance',
     );
     
-    // Basic validation on the authentication details
-    foreach ($vars as $key => $value) {
-      switch ($key) {
-        case 'username':
-        case 'password':
-          if (empty($value)) {
-            throw new Exception('API username or password not specified.');
-          }
-          break;
-      }
-    }
-    
     $retval = $this->executeApiRequest($vars);
     list(, $response) = array_values(reset($retval));
     
@@ -289,6 +270,18 @@ class smsbroadcastau {
    *   Response from SMS gateway. 
    */
   public function executeApiRequest($vars) {
+    // Basic validation on the authentication details
+    foreach ($vars as $key => $value) {
+      switch ($key) {
+        case 'username':
+        case 'password':
+          if (empty($value)) {
+            throw new Exception('API username or password not specified.');
+          }
+          break;
+      }
+    }
+
     $data = $this->preparePostData($vars);
     $retval = $this->executePostRequest($data);
     
