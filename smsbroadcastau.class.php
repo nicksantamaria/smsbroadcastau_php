@@ -83,9 +83,12 @@ class smsbroadcastau {
    * single SMS, regardless of the value of this setting. 
    *
    * If your message is longer than 160 characters, it is split into parts of up
-   * to 153 characters (not 160). 
+   * to 153 characters (not 160).
+   *
+   * If set to NULL, the class automatically detects the value for you in the  
+   * send() method.
    */
-  public $maxsplit = 1;
+  public $maxsplit = NULL;
   
   /**
    * Your reference number for the message.
@@ -94,6 +97,22 @@ class smsbroadcastau {
    * up to 20 characters. 
    */
   public $ref = '';
+
+  /**
+   * Maximum number of characters that can be inlcuded in a single SMS.
+   */
+  const MAX_CHARS_PER_MESSAGE_SINGLE = 160;
+
+  /**
+   * Maximum number of characters that can be included in each SMS when sending
+   * multipart SMSs.
+   */
+  const MAX_CHARS_PER_MESSAGE_MULTI = 153;
+
+  /**
+   * Maximum number of SMSs that can be part of a multipart SMS.
+   */
+  const MAX_SMS_PER_MULTIPART = 7;
   
   /**
    * Constructor
@@ -170,6 +189,21 @@ class smsbroadcastau {
       'message' => $this->message,
       'ref' => $this->ref,
     );
+
+    // Automatically detect the maxsplit value if required.
+    if (is_null($this->maxsplit)) {
+      $message_length = strlen($vars['message']);
+      if ($message_length <= self::MAX_CHARS_PER_MESSAGE_SINGLE) {
+        $vars['maxsplit'] = 1;
+      }
+      else {
+        // API documentation states multi-part SMSs are limited to 153 chars.
+        $vars['maxsplit'] = ceil($message_length / self::MAX_CHARS_PER_MESSAGE_MULTI);
+      }
+    }
+    else {
+      $vars['maxsplit'] = $this->maxsplit;
+    }
     
     // Basic validation on the authentication details and POST data.
     foreach ($vars as $key => $value) {
@@ -190,6 +224,17 @@ class smsbroadcastau {
         case 'from':
           if (strlen($value) > 11) {
             throw new Exception('From string must be 11 characters or less.');
+          }
+          break;
+
+        case 'multisplit':
+          // Ensure we don't attempt to send multi-part SMS longer than 7 long.
+          if ($value > self::MAX_SMS_PER_MULTIPART) {
+            $args = array(
+              '!chars' => $message_length,
+              '!multisplit' => $value,
+            );
+            throw new Exception(strtr('Can not send a multi-part message longer than 7 SMSs. Attempted to send !chars characters over !multisplit messages.', $args));
           }
           break;
       }
