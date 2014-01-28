@@ -5,6 +5,7 @@
  * Contains class to integrate with "SMS Broadcast" SMS gateway API.
  *
  * @see https://www.smsbroadcast.com.au
+ * @see https://www.smsbroadcast.com.au/Advanced%20HTTP%20API.pdf
  */
 
 class smsbroadcastau {
